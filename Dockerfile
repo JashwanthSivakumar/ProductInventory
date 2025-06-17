@@ -19,7 +19,7 @@ FROM openjdk:17
 WORKDIR /app
  
 # Copy the built jar file from the build stage
-COPY --from=builder /app/target/*.war productinventorysystem-0.0.1-SNAPSHOT.war
+COPY --from=builder /app/target/*.war productinventorysystem.war
  
 # Expose the application port
 EXPOSE 9093:8080
