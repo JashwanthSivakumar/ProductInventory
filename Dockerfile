@@ -25,4 +25,4 @@ COPY --from=builder /app/target/*.war productinventorysystem-0.0.1-SNAPSHOT.war
 EXPOSE 9093:8080
  
 # Define the entrypoint to run the application
-ENTRYPOINT ["java", "-war", "productinventorysystem-0.0.1-SNAPSHOT.war"]
+ENTRYPOINT ["java", "-jar", "productinventorysystem.war"]
