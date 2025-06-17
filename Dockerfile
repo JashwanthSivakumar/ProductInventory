@@ -1,14 +1,28 @@
-# Use the official OpenJDK image as the base
-FROM openjdk:17-jdk-slim
+# Stage 1: Build the application
+FROM maven:3.8.1-openjdk-17 AS builder
  
 # Set the working directory inside the container
 WORKDIR /app
  
-# Copy the application JAR file to the container
-COPY target/productinventorysystem-0.0.1-SNAPSHOT.war /app/productinventorysystem-0.0.1-SNAPSHOT.war
+# Copy the pom.xml and download dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
  
-# Expose the port your application runs on
-EXPOSE 8090
+# Copy the rest of the application source code and build the application
+COPY src ./src
+RUN mvn clean package -DskipTests
  
-# Define the entry point for running the application
-CMD ["java", "-war", "productinventorysystem-0.0.1-SNAPSHOT.war"]
+# Stage 2: Create the runtime image
+FROM openjdk:17
+ 
+# Set the working directory inside the container
+WORKDIR /app
+ 
+# Copy the built jar file from the build stage
+COPY --from=builder /app/target/*.war productinventorysystem-0.0.1-SNAPSHOT.war
+ 
+# Expose the application port
+EXPOSE 9093:8080
+ 
+# Define the entrypoint to run the application
+ENTRYPOINT ["java", "-war", "productinventorysystem-0.0.1-SNAPSHOT.war"]
